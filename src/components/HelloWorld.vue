@@ -1,58 +1,121 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div>
+    <div class="itxst" id="itxst1">
+      <div class="item" :data-id="item.key" :key="item.key" v-for="(item) in items">{{item.name}}</div>
+    </div>
+
+    {{items}}
+
+    <div class="itxst" id="itxst2">
+      <div class="item" :data-id="item.key" :key="item.key" v-for="(item) in items2">{{item.name}}</div>
+    </div>
+
+    {{items2}}
+
   </div>
 </template>
 
 <script>
+import Sortable from 'sortablejs'
+import getRandomArrs from './random'
+
+const temp1 = getRandomArrs(1, 10, 10)
+const temp2 = getRandomArrs(11, 20, 10)
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+
+  data() {
+    return {
+      items: temp1,
+      items2: temp2
+    }
+  },
+
+  methods: {
+    init() {
+      var $ul = this.$el.querySelector('#itxst1')
+      var $ul2 = this.$el.querySelector('#itxst2')
+      var that = this
+      var options = {
+        animation: 100,
+        draggable: ".item",
+        group: {
+            name: "itxst.com"
+        },
+        onEnd:function(event){
+            var newIndex = event.newIndex,
+                oldIndex = event.oldIndex,
+                $li = $ul.children[newIndex],
+                $oldLi = $ul.children[oldIndex]
+            // 先删除移动的节点
+            $ul.removeChild($li)    
+            // 再插入移动的节点到原有节点，还原了移动的操作
+            if(newIndex > oldIndex) {
+                $ul.insertBefore($li,$oldLi)
+            } else {
+                $ul.insertBefore($li,$oldLi.nextSibling)
+            }
+            // 更新items数组
+            var item = that.items.splice(oldIndex,1)
+            that.items.splice(newIndex,0,item[0])
+            // 下一个tick就会走patch更新
+        },
+      }
+      new Sortable($ul, options)
+
+      var options2 = {
+        animation: 100,
+        draggable: ".item",
+        group: {
+            name: "itxst.com"
+        },
+        onEnd:function(event){
+            var newIndex = event.newIndex,
+                oldIndex = event.oldIndex,
+                $li = $ul2.children[newIndex],
+                $oldLi = $ul2.children[oldIndex]
+            // 先删除移动的节点
+            $ul2.removeChild($li)    
+            // 再插入移动的节点到原有节点，还原了移动的操作
+            if(newIndex > oldIndex) {
+                $ul2.insertBefore($li,$oldLi)
+            } else {
+                $ul2.insertBefore($li,$oldLi.nextSibling)
+            }
+            // 更新items数组
+            var item = that.items2.splice(oldIndex,1)
+            that.items2.splice(newIndex,0,item[0])
+            // 下一个tick就会走patch更新
+        },
+      }
+      new Sortable($ul2, options2)
+    }
+  },
+
+  mounted () {
+    this.init()
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.itxst {
+  margin: 10px auto;
+  width: 80%;
+  min-height: 50px;
+  border: 1px solid black;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+
+.itxst div {
+  padding: 6px;
+  background-color: #fdfdfd;
+  border: solid 1px #eee;
+  margin-bottom: 10px;
+  cursor: move;
 }
 </style>
