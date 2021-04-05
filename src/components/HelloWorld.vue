@@ -47,22 +47,49 @@ export default {
             name: "itxst.com"
         },
         onEnd:function(event){
-            var newIndex = event.newIndex,
-                oldIndex = event.oldIndex,
-                $li = $ul.children[newIndex],
-                $oldLi = $ul.children[oldIndex]
-            // 先删除移动的节点
-            $ul.removeChild($li)    
-            // 再插入移动的节点到原有节点，还原了移动的操作
-            if(newIndex > oldIndex) {
-                $ul.insertBefore($li,$oldLi)
-            } else {
-                $ul.insertBefore($li,$oldLi.nextSibling)
+            let isSamePool = true
+            // 判断是否是同一个
+            if (event.from.id !== event.to.id) {
+              isSamePool = false
             }
-            // 更新items数组
-            var item = that.items.splice(oldIndex,1)
-            that.items.splice(newIndex,0,item[0])
-            // 下一个tick就会走patch更新
+
+            let newIndex, oldIndex, $newLi, $oldLi, $newTarget, $oldTarget, item
+            newIndex = event.newIndex
+            oldIndex = event.oldIndex
+            if (isSamePool) {
+                $newTarget = $ul
+                $newLi = $newTarget.children[newIndex]
+                $oldLi = $newTarget.children[oldIndex]
+              // 先删除移动的节点
+              $newTarget.removeChild($newLi)    
+              // 再插入移动的节点到原有节点，还原了移动的操作
+              if(newIndex > oldIndex) {
+                  $newTarget.insertBefore($newLi,$oldLi)
+              } else {
+                  $newTarget.insertBefore($newLi,$oldLi.nextSibling)
+              }
+              // 更新items数组
+              item = that.items.splice(oldIndex,1)
+              that.items.splice(newIndex, 0, item[0])
+              // 下一个tick就会走patch更新
+            } else {
+              $newTarget = $ul2
+              $oldTarget = $ul
+              $newLi = $newTarget.children[newIndex]
+              // 先删除移动的节点
+              $newTarget.removeChild($newLi)
+
+              if (oldIndex < $oldTarget.children.length) {
+                $oldLi = $oldTarget.children[oldIndex]
+                $oldTarget.insertBefore($newLi,$oldLi)
+              } else {
+                $oldLi = $oldTarget.children[oldIndex - 1]
+                $oldTarget.insertBefore($newLi,$oldLi.nextSibling)
+              }
+
+              item = that.items.splice(oldIndex,1)
+              that.items2.splice(newIndex, 0, item[0])
+            }
         },
       }
       new Sortable($ul, options)
@@ -74,22 +101,49 @@ export default {
             name: "itxst.com"
         },
         onEnd:function(event){
-            var newIndex = event.newIndex,
-                oldIndex = event.oldIndex,
-                $li = $ul2.children[newIndex],
-                $oldLi = $ul2.children[oldIndex]
-            // 先删除移动的节点
-            $ul2.removeChild($li)    
-            // 再插入移动的节点到原有节点，还原了移动的操作
-            if(newIndex > oldIndex) {
-                $ul2.insertBefore($li,$oldLi)
-            } else {
-                $ul2.insertBefore($li,$oldLi.nextSibling)
+            let isSamePool = true
+            // 判断是否是同一个
+            if (event.from.id !== event.to.id) {
+              isSamePool = false
             }
-            // 更新items数组
-            var item = that.items2.splice(oldIndex,1)
-            that.items2.splice(newIndex,0,item[0])
-            // 下一个tick就会走patch更新
+
+            let newIndex, oldIndex, $newLi, $oldLi, $newTarget, $oldTarget, item
+            newIndex = event.newIndex
+            oldIndex = event.oldIndex
+            if (isSamePool) {
+                $newTarget = $ul2
+                $newLi = $newTarget.children[newIndex]
+                $oldLi = $newTarget.children[oldIndex]
+              // 先删除移动的节点
+              $newTarget.removeChild($newLi)    
+              // 再插入移动的节点到原有节点，还原了移动的操作
+              if(newIndex > oldIndex) {
+                  $newTarget.insertBefore($newLi,$oldLi)
+              } else {
+                  $newTarget.insertBefore($newLi,$oldLi.nextSibling)
+              }
+              // 更新items数组
+              item = that.items.splice(oldIndex,1)
+              that.items.splice(newIndex, 0, item[0])
+              // 下一个tick就会走patch更新
+            } else {
+              $newTarget = $ul
+              $oldTarget = $ul2
+              $newLi = $newTarget.children[newIndex]
+              // 先删除移动的节点
+              $newTarget.removeChild($newLi)
+
+              if (oldIndex < $oldTarget.children.length) {
+                $oldLi = $oldTarget.children[oldIndex]
+                $oldTarget.insertBefore($newLi,$oldLi)
+              } else {
+                $oldLi = $oldTarget.children[oldIndex - 1]
+                $oldTarget.insertBefore($newLi,$oldLi.nextSibling)
+              }
+
+              item = that.items2.splice(oldIndex,1)
+              that.items.splice(newIndex, 0, item[0])
+            }
         },
       }
       new Sortable($ul2, options2)
